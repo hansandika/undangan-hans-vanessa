@@ -11,7 +11,7 @@ export function Gift() {
     try {
       await navigator.clipboard.writeText(value);
       setCopied(value);
-      window.setTimeout(() => setCopied(null), 2000);
+      window.setTimeout(() => setCopied(null), 3500);
     } catch {
       const field = document.createElement("textarea");
       field.value = value;
@@ -20,7 +20,7 @@ export function Gift() {
       document.execCommand("copy");
       document.body.removeChild(field);
       setCopied(value);
-      window.setTimeout(() => setCopied(null), 2000);
+      window.setTimeout(() => setCopied(null), 3500);
     }
   };
 
@@ -49,7 +49,12 @@ export function Gift() {
               <button
                 type="button"
                 onClick={() => copyNumber(gift.accountNumber)}
-                className="mt-3 rounded-full border border-cinnabar px-4 py-1.5 text-sm text-cinnabar hover:bg-cinnabar hover:text-ivory"
+                aria-live="polite"
+                className={`mt-3 min-w-[6.5rem] rounded-full border px-4 py-1.5 text-sm transition ${
+                  copied === gift.accountNumber
+                    ? "border-cinnabar bg-cinnabar text-ivory"
+                    : "border-cinnabar bg-transparent text-cinnabar hover:bg-cinnabar hover:text-ivory"
+                }`}
               >
                 {copied === gift.accountNumber ? t.gift.copied : t.gift.copy}
               </button>

@@ -46,7 +46,7 @@ export default function App() {
       >
         <div className="lattice-overlay pointer-events-none absolute inset-0 opacity-40" />
         {opened && (
-          <div className="sticky top-3 z-30 flex justify-end px-4">
+          <div className="sticky top-0 z-30 flex justify-end border-b border-gold/20 bg-ivory/90 px-4 py-2 backdrop-blur">
             <LanguageToggle />
           </div>
         )}
