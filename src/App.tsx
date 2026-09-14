@@ -1,71 +1,93 @@
-import { useMemo, useState } from "react";
-import { CoverGate } from "./components/CoverGate";
-import { Couple } from "./components/Couple";
-import { Events } from "./components/Events";
-import { Footer } from "./components/Footer";
-import { Gallery } from "./components/Gallery";
-import { Gift } from "./components/Gift";
-import { Hero } from "./components/Hero";
-import { LanguageToggle } from "./components/LanguageToggle";
-import { MusicToggle } from "./components/MusicToggle";
-import { Rsvp } from "./components/Rsvp";
-import { wedding } from "./data/wedding";
-import { createMusicController } from "./lib/music";
+import { useEffect, useRef, useState } from 'react'
+import { Cover } from './components/Cover'
+import { Couple } from './components/Couple'
+import { Events } from './components/Events'
+import { Footer } from './components/Footer'
+import { Gallery } from './components/Gallery'
+import { Gift } from './components/Gift'
+import { Hero } from './components/Hero'
+import { LanguageSwitcher } from './components/LanguageSwitcher'
+import { MusicToggle } from './components/MusicToggle'
+import { Rsvp } from './components/Rsvp'
+import { Verse } from './components/Verse'
+import { wedding } from './data/wedding'
 
 export default function App() {
-  const [opened, setOpened] = useState(false);
-  const [playing, setPlaying] = useState(false);
-  const music = useMemo(
-    () => createMusicController(wedding.music.src),
-    [],
-  );
+  const [opened, setOpened] = useState(false)
+  const [leaving, setLeaving] = useState(false)
+  const [playing, setPlaying] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
-  const play = async () => {
-    await music.play();
-    setPlaying(true);
-  };
+  useEffect(() => {
+    document.body.style.overflow = opened ? '' : 'hidden'
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [opened])
 
-  const pause = () => {
-    music.pause();
-    setPlaying(false);
-  };
+  function playMusic() {
+    const audio = audioRef.current
+    if (!audio) return
+    void audio.play().then(
+      () => setPlaying(true),
+      () => setPlaying(false),
+    )
+  }
 
-  const openInvitation = async () => {
-    setOpened(true);
-    await play();
-  };
+  function openInvitation() {
+    if (leaving || opened) return
+    setLeaving(true)
+    playMusic()
+    window.setTimeout(() => {
+      setOpened(true)
+      window.scrollTo({ top: 0, behavior: 'instant' })
+    }, 720)
+  }
+
+  function toggleMusic() {
+    const audio = audioRef.current
+    if (!audio) return
+    if (playing) {
+      audio.pause()
+      setPlaying(false)
+      return
+    }
+    playMusic()
+  }
 
   return (
-    <div className="min-h-screen bg-cinnabar-ink">
-      <CoverGate open={opened} onOpen={() => void openInvitation()} />
+    <div className="paper-bg min-h-dvh">
+      <audio ref={audioRef} src={wedding.music.src} loop preload="auto" />
 
-      <div
-        className={`paper-bg relative mx-auto min-h-screen w-full max-w-[430px] shadow-[0_0_80px_rgba(0,0,0,0.45)] ${
-          opened ? "opacity-100" : "opacity-0"
-        }`}
-      >
-        <div className="lattice-overlay pointer-events-none absolute inset-0 opacity-40" />
-        {opened && (
-          <div className="sticky top-0 z-30 flex justify-end border-b border-gold/20 bg-ivory/90 px-4 py-2 backdrop-blur">
-            <LanguageToggle />
+      {!opened ? (
+        <div
+          className={`fixed inset-0 z-30 transition-transform duration-700 ease-[cubic-bezier(0.76,0,0.24,1)] ${
+            leaving ? '-translate-y-full' : 'translate-y-0'
+          }`}
+        >
+          <Cover onOpen={openInvitation} />
+        </div>
+      ) : null}
+
+      <main className={opened ? 'opacity-100' : 'pointer-events-none select-none'}>
+        <Hero />
+        <Verse />
+        <Couple />
+        <Events />
+        <Gallery />
+        <Rsvp />
+        <Gift />
+        <Footer />
+      </main>
+
+      {opened ? (
+        <>
+          <div className="fixed right-4 top-4 z-40 sm:right-5">
+            <LanguageSwitcher />
           </div>
-        )}
-        <main>
-          <Hero />
-          <Couple />
-          <Events />
-          <Gallery />
-          <Rsvp />
-          <Gift />
-          <Footer />
-        </main>
-        {opened && (
-          <MusicToggle
-            playing={playing}
-            onToggle={() => void (playing ? pause() : play())}
-          />
-        )}
-      </div>
+          <MusicToggle playing={playing} onToggle={toggleMusic} />
+        </>
+      ) : null}
     </div>
-  );
+  )
 }

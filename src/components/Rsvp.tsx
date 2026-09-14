@@ -1,162 +1,182 @@
-import { useEffect, useState, type FormEvent } from "react";
-import { useLocale } from "../context/LocaleContext";
-import {
-  loadGuestbook,
-  submitRsvp,
-  type Attendance,
-  type GuestbookEntry,
-} from "../lib/guestbook";
-import { SectionHeading } from "./Ornaments";
+import { useState, type FormEvent } from 'react'
+import type { Attendance } from '../data/wedding'
+import { useGuestbook } from '../hooks/useGuestbook'
+import { useI18n } from '../i18n/LocaleContext'
+import { dateLocale } from '../i18n/locale'
+import { HappinessDivider, SectionKicker } from './Ornaments'
+import { Reveal } from './Reveal'
 
-const ATTENDANCE: Attendance[] = ["yes", "no", "maybe"];
+const attendanceTone: Record<Attendance, string> = {
+  hadir: 'bg-cinnabar/10 text-cinnabar',
+  'tidak-hadir': 'bg-ink/8 text-ink-soft',
+  ragu: 'bg-gold/20 text-gold-deep',
+}
 
 export function Rsvp() {
-  const { t, guestName } = useLocale();
-  const [name, setName] = useState(guestName);
-  const [attending, setAttending] = useState<Attendance>("yes");
-  const [guests, setGuests] = useState(1);
-  const [message, setMessage] = useState("");
-  const [entries, setEntries] = useState<GuestbookEntry[]>([]);
-  const [error, setError] = useState("");
-  const [justSent, setJustSent] = useState(false);
+  const { locale, t } = useI18n()
+  const { entries, addEntry, ready } = useGuestbook()
+  const [name, setName] = useState('')
+  const [attendance, setAttendance] = useState<Attendance>('hadir')
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
+  const [justSent, setJustSent] = useState(false)
 
-  useEffect(() => {
-    setEntries(loadGuestbook());
-  }, []);
+  const attendanceOptions: { value: Attendance; label: string }[] = [
+    { value: 'hadir', label: t.rsvp.hadir },
+    { value: 'tidak-hadir', label: t.rsvp.tidakHadir },
+    { value: 'ragu', label: t.rsvp.ragu },
+  ]
 
-  const onSubmit = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!name.trim()) {
-      setError(t.rsvp.nameRequired);
-      return;
+  const attendanceLabel: Record<Attendance, string> = {
+    hadir: t.rsvp.hadir,
+    'tidak-hadir': t.rsvp.tidakHadir,
+    ragu: t.rsvp.ragu,
+  }
+
+  function formatWhen(iso: string) {
+    return new Intl.DateTimeFormat(dateLocale(locale), {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(iso))
+  }
+
+  function onSubmit(event: FormEvent) {
+    event.preventDefault()
+    const trimmedName = name.trim()
+    const trimmedMessage = message.trim()
+    if (!trimmedName) {
+      setError(t.rsvp.errorName)
+      return
     }
-    setError("");
-    const saved = await submitRsvp({
-      name: name.trim(),
-      attending,
-      guests,
-      message: message.trim(),
-    });
-    setEntries((prev) => [saved, ...prev]);
-    setMessage("");
-    setJustSent(true);
-    window.setTimeout(() => setJustSent(false), 3200);
-  };
+    if (!trimmedMessage) {
+      setError(t.rsvp.errorMessage)
+      return
+    }
+    addEntry({ name: trimmedName, attendance, message: trimmedMessage })
+    setName('')
+    setAttendance('hadir')
+    setMessage('')
+    setError('')
+    setJustSent(true)
+    window.setTimeout(() => setJustSent(false), 3500)
+  }
 
-  const labelFor = (value: Attendance) => {
-    if (value === "yes") return t.rsvp.yes;
-    if (value === "no") return t.rsvp.no;
-    return t.rsvp.maybe;
-  };
+  const compact = locale === 'zh' ? 'tracking-[0.12em]' : 'uppercase tracking-[0.18em]'
 
   return (
-    <section className="fade-up px-6 py-12">
-      <SectionHeading title={t.rsvp.title} />
-      <p className="mb-6 text-center text-sm leading-relaxed text-ink-soft">
-        {t.rsvp.subtitle}
-      </p>
+    <section id="rsvp" className="px-5 py-12">
+      <Reveal>
+        <SectionKicker>{t.rsvp.kicker}</SectionKicker>
+        <h2 className="mt-2 text-center font-display text-4xl text-ink sm:text-5xl">{t.rsvp.title}</h2>
+        <HappinessDivider className="mt-4" />
+        <p className="mx-auto mt-4 max-w-md text-center text-sm leading-relaxed text-ink-soft">
+          {t.rsvp.intro}
+        </p>
+      </Reveal>
 
-      <form
-        onSubmit={onSubmit}
-        className="space-y-4 rounded-2xl border border-gold/30 bg-ivory/80 p-4"
-      >
-        <label className="block text-sm">
-          <span className="text-ink-soft">{t.rsvp.name}</span>
-          <input
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            className="mt-1 w-full rounded-lg border border-gold/30 bg-ivory px-3 py-2 outline-none focus:border-cinnabar"
-          />
-        </label>
-
-        <fieldset>
-          <legend className="text-sm text-ink-soft">{t.rsvp.attending}</legend>
-          <div className="mt-2 grid grid-cols-1 gap-2">
-            {ATTENDANCE.map((value) => (
-              <label
-                key={value}
-                className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm ${
-                  attending === value
-                    ? "border-cinnabar bg-cinnabar/10 text-cinnabar-deep"
-                    : "border-gold/25"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="attending"
-                  checked={attending === value}
-                  onChange={() => setAttending(value)}
-                />
-                {labelFor(value)}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-
-        <label className="block text-sm">
-          <span className="text-ink-soft">{t.rsvp.guests}</span>
-          <input
-            type="number"
-            min={1}
-            max={20}
-            value={guests}
-            onChange={(event) => setGuests(Number(event.target.value) || 1)}
-            className="mt-1 w-full rounded-lg border border-gold/30 bg-ivory px-3 py-2 outline-none focus:border-cinnabar"
-          />
-        </label>
-
-        <label className="block text-sm">
-          <span className="text-ink-soft">{t.rsvp.message}</span>
-          <textarea
-            rows={3}
-            value={message}
-            onChange={(event) => setMessage(event.target.value)}
-            className="mt-1 w-full rounded-lg border border-gold/30 bg-ivory px-3 py-2 outline-none focus:border-cinnabar"
-          />
-        </label>
-
-        {error && <p className="text-sm text-cinnabar">{error}</p>}
-        {justSent && <p className="text-sm text-cinnabar-deep">{t.rsvp.success}</p>}
-
-        <button
-          type="submit"
-          className="w-full rounded-full bg-cinnabar py-2.5 font-display text-lg text-ivory"
+      <Reveal delayMs={80} className="mx-auto mt-8 max-w-lg">
+        <form
+          onSubmit={onSubmit}
+          className="rounded-[1.75rem] border border-gold/35 bg-paper px-5 py-7 shadow-sm sm:px-8"
         >
-          {t.rsvp.submit}
-        </button>
-      </form>
+          <label className={`block text-xs text-ink-soft ${compact}`}>
+            {t.rsvp.name}
+            <input
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              className="mt-2 w-full rounded-2xl border border-sand bg-ivory px-4 py-3 text-base tracking-normal text-ink outline-none ring-gold/40 focus:ring-2"
+              placeholder={t.rsvp.namePlaceholder}
+              autoComplete="name"
+            />
+          </label>
 
-      <div className="mt-8">
-        <h3 className="mb-3 text-center font-display text-xl text-cinnabar-deep">
-          {t.rsvp.wishes}
-        </h3>
-        {entries.length === 0 ? (
-          <p className="text-center text-sm text-ink-soft">{t.rsvp.empty}</p>
+          <fieldset className="mt-5">
+            <legend className={`text-xs text-ink-soft ${compact}`}>{t.rsvp.attendance}</legend>
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              {attendanceOptions.map((option) => (
+                <label
+                  key={option.value}
+                  className={`cursor-pointer rounded-2xl border px-2 py-3 text-center text-xs font-medium transition ${
+                    attendance === option.value
+                      ? 'border-cinnabar bg-cinnabar/10 text-cinnabar'
+                      : 'border-sand bg-ivory text-ink-soft'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="attendance"
+                    value={option.value}
+                    checked={attendance === option.value}
+                    onChange={() => setAttendance(option.value)}
+                    className="sr-only"
+                  />
+                  {option.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <label className={`mt-5 block text-xs text-ink-soft ${compact}`}>
+            {t.rsvp.message}
+            <textarea
+              value={message}
+              onChange={(event) => setMessage(event.target.value)}
+              rows={4}
+              className="mt-2 w-full resize-none rounded-2xl border border-sand bg-ivory px-4 py-3 text-base tracking-normal text-ink outline-none ring-gold/40 focus:ring-2"
+              placeholder={t.rsvp.messagePlaceholder}
+            />
+          </label>
+
+          {error ? <p className="mt-3 text-sm text-cinnabar">{error}</p> : null}
+          {justSent ? <p className="mt-3 text-sm text-cinnabar-deep">{t.rsvp.success}</p> : null}
+
+          <button
+            type="submit"
+            className={`btn-cinnabar mt-6 w-full rounded-full py-3.5 text-xs font-medium ${
+              locale === 'zh' ? 'tracking-[0.18em]' : 'uppercase tracking-[0.24em]'
+            }`}
+          >
+            {t.rsvp.submit}
+          </button>
+          <p className="mt-3 text-center text-[11px] leading-relaxed text-ink-soft/80">{t.rsvp.demo}</p>
+        </form>
+      </Reveal>
+
+      <Reveal delayMs={120} className="mx-auto mt-8 max-w-lg">
+        <h3 className="text-center font-display text-2xl text-ink">{t.rsvp.book}</h3>
+        {!ready ? (
+          <p className="mt-4 text-center text-sm text-ink-soft">{t.rsvp.loading}</p>
+        ) : entries.length === 0 ? (
+          <p className="mt-4 rounded-[1.5rem] border border-dashed border-gold/40 bg-paper/60 px-5 py-8 text-center text-sm text-ink-soft">
+            {t.rsvp.empty}
+          </p>
         ) : (
-          <ul className="space-y-3">
+          <ul className="guestbook-scroll mt-4 max-h-[28rem] space-y-3 overflow-y-auto pr-1">
             {entries.map((entry) => (
               <li
                 key={entry.id}
-                className="rounded-xl border border-gold/20 bg-ivory-deep/40 px-4 py-3"
+                className="rounded-[1.4rem] border border-gold/25 bg-paper px-5 py-4 shadow-sm"
               >
-                <div className="flex items-baseline justify-between gap-2">
-                  <p className="font-display text-lg text-cinnabar-deep">
-                    {entry.name}
-                  </p>
-                  <span className="text-[11px] tracking-wide text-gold">
-                    {labelFor(entry.attending)}
+                <div className="flex items-start justify-between gap-3">
+                  <p className="font-display text-xl text-ink">{entry.name}</p>
+                  <span
+                    className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] ${
+                      locale === 'zh' ? 'tracking-[0.08em]' : 'uppercase tracking-[0.14em]'
+                    } ${attendanceTone[entry.attendance]}`}
+                  >
+                    {attendanceLabel[entry.attendance]}
                   </span>
                 </div>
-                {entry.message && (
-                  <p className="mt-1 text-sm leading-relaxed text-ink">
-                    {entry.message}
-                  </p>
-                )}
+                <p className="mt-2 text-sm leading-relaxed text-ink-soft">{entry.message}</p>
+                <p className="mt-2 text-[11px] text-ink-soft/70">{formatWhen(entry.createdAt)}</p>
               </li>
             ))}
           </ul>
         )}
-      </div>
+      </Reveal>
     </section>
-  );
+  )
 }

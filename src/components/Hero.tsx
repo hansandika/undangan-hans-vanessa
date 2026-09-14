@@ -1,81 +1,79 @@
-import { useLocale } from "../context/LocaleContext";
-import { wedding } from "../data/wedding";
-import { useCountdown } from "../lib/useCountdown";
+import { wedding } from '../data/wedding'
+import { useCountdown } from '../hooks/useCountdown'
+import { useI18n } from '../i18n/LocaleContext'
+import { formatWeddingDate } from '../i18n/locale'
+import { HappinessDivider, SectionKicker } from './Ornaments'
+import { Reveal } from './Reveal'
 
-function Unit({ value, label }: { value: number; label: string }) {
-  return (
-    <div className="flex min-w-[3.4rem] flex-col items-center">
-      <span className="font-display text-3xl text-cinnabar-deep">
-        {String(value).padStart(2, "0")}
-      </span>
-      <span className="mt-1 text-[10px] uppercase tracking-[0.22em] text-ink-soft">
-        {label}
-      </span>
-    </div>
-  );
-}
-
-export function Countdown() {
-  const { t } = useLocale();
-  const { days, hours, minutes, seconds, ended } = useCountdown();
-
-  if (ended) {
-    return (
-      <p className="font-display text-lg italic text-cinnabar">{t.countdown.ended}</p>
-    );
-  }
-
-  return (
-    <div className="flex items-end justify-center gap-3 sm:gap-4">
-      <Unit value={days} label={t.countdown.days} />
-      <span className="mb-5 text-gold">·</span>
-      <Unit value={hours} label={t.countdown.hours} />
-      <span className="mb-5 text-gold">·</span>
-      <Unit value={minutes} label={t.countdown.minutes} />
-      <span className="mb-5 text-gold">·</span>
-      <Unit value={seconds} label={t.countdown.seconds} />
-    </div>
-  );
+function pad(n: number) {
+  return n.toString().padStart(2, '0')
 }
 
 export function Hero() {
-  const { locale, t } = useLocale();
-  const photo = wedding.photos[1];
+  const { locale, t } = useI18n()
+  const countdown = useCountdown(wedding.weddingDate)
 
   return (
-    <section className="fade-up px-6 pb-6 pt-12 text-center">
-      <p className="text-[11px] uppercase tracking-[0.5em] text-gold">
-        {t.hero.kicker}
-      </p>
-      <h2 className="mt-3 font-display text-2xl italic text-ink-soft">
-        {t.hero.weAreGettingMarried}
-      </h2>
-      <h1 className="mt-2 font-display text-5xl leading-tight text-cinnabar-deep">
-        {wedding.couple.groom.givenName}
-        <span className="block font-cjk text-2xl text-gold">和</span>
-        {wedding.couple.bride.givenName}
-      </h1>
-      <p className="mt-3 font-cjk text-sm tracking-[0.2em] text-cinnabar">
-        {t.hero.blessing}
-      </p>
-      <p className="mt-2 font-display text-lg text-ink">
-        {wedding.date.display[locale]}
-      </p>
+    <section className="px-5 pb-6 pt-16 sm:pt-20">
+      <Reveal>
+        <SectionKicker>{t.hero.kicker}</SectionKicker>
+        <h2 className="mt-2 text-center font-script text-6xl text-ink sm:text-7xl">
+          {wedding.couple.displayNames}
+        </h2>
+        <HappinessDivider className="mt-4" />
+        <p className="mx-auto mt-6 max-w-md text-center font-display text-lg leading-relaxed text-ink-soft italic sm:text-xl">
+          {t.hero.poetic}
+        </p>
+      </Reveal>
 
-      <div className="relative mx-auto mt-8 max-w-[260px]">
-        <img
-          src={photo.src}
-          alt={photo.alt[locale]}
-          className="photo-arch aspect-[3/4] w-full"
-        />
-        <span className="font-cjk absolute -right-2 top-6 text-4xl text-cinnabar/20">
-          囍
-        </span>
-      </div>
+      <Reveal delayMs={120} className="mx-auto mt-10 max-w-[280px] sm:max-w-[320px]">
+        <div className="arch-frame float-soft aspect-[3/4]">
+          <img src={wedding.hero.photo} alt={wedding.couple.displayNames} />
+        </div>
+      </Reveal>
 
-      <div className="mt-8 rounded-2xl border border-gold/35 bg-ivory-deep/50 px-4 py-5">
-        <Countdown />
-      </div>
+      <Reveal delayMs={180} className="mt-12">
+        {countdown.completed ? (
+          <p className="text-center font-display text-2xl text-cinnabar">{t.hero.completed}</p>
+        ) : (
+          <>
+            <p
+              className={`text-center text-[11px] text-ink-soft ${
+                locale === 'zh' ? 'tracking-[0.2em]' : 'uppercase tracking-[0.28em]'
+              }`}
+            >
+              {t.hero.countdownLabel}
+            </p>
+            <div className="mx-auto mt-4 grid max-w-md grid-cols-4 gap-2 sm:gap-3">
+              {[
+                { label: t.hero.day, value: countdown.days, raw: true },
+                { label: t.hero.hour, value: countdown.hours },
+                { label: t.hero.minute, value: countdown.minutes },
+                { label: t.hero.second, value: countdown.seconds },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-2xl border border-gold/40 bg-paper/90 px-1 py-3 text-center shadow-sm"
+                >
+                  <div className="font-display text-2xl font-semibold text-cinnabar-deep sm:text-3xl">
+                    {item.raw ? item.value : pad(item.value)}
+                  </div>
+                  <div
+                    className={`mt-1 text-[10px] text-ink-soft ${
+                      locale === 'zh' ? 'tracking-[0.1em]' : 'uppercase tracking-[0.18em]'
+                    }`}
+                  >
+                    {item.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 text-center font-display text-base text-ink-soft">
+              {formatWeddingDate(wedding.weddingDate, locale)}
+            </p>
+          </>
+        )}
+      </Reveal>
     </section>
-  );
+  )
 }

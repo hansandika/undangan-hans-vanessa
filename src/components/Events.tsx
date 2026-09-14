@@ -1,77 +1,55 @@
-import { useLocale } from "../context/LocaleContext";
-import { wedding } from "../data/wedding";
-import { GoldCornerFrame, SectionHeading } from "./Ornaments";
-
-function EventCard({
-  title,
-  time,
-  venue,
-  address,
-  mapsUrl,
-  mapLabel,
-  mapNote,
-}: {
-  title: string;
-  time: string;
-  venue: string;
-  address: string;
-  mapsUrl: string;
-  mapLabel: string;
-  mapNote: string;
-}) {
-  return (
-    <article className="rounded-xl border border-gold/30 bg-ivory/70">
-      <GoldCornerFrame>
-        <p className="text-[11px] uppercase tracking-[0.35em] text-gold">{title}</p>
-        <p className="mt-2 font-display text-2xl text-cinnabar-deep">{time}</p>
-        <p className="mt-3 font-display text-lg text-ink">{venue}</p>
-        <p className="mt-1 text-sm leading-relaxed text-ink-soft">{address}</p>
-        <div className="mt-4 rounded-lg border border-dashed border-gold/40 bg-ivory-deep/60 px-3 py-6 text-center">
-          <p className="text-xs leading-relaxed text-ink-soft">{mapNote}</p>
-          <a
-            href={mapsUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-3 inline-block rounded-full border border-cinnabar px-4 py-1.5 text-sm text-cinnabar transition hover:bg-cinnabar hover:text-ivory"
-          >
-            {mapLabel}
-          </a>
-        </div>
-      </GoldCornerFrame>
-    </article>
-  );
-}
+import { wedding } from '../data/wedding'
+import { useI18n } from '../i18n/LocaleContext'
+import { formatWeddingDate } from '../i18n/locale'
+import { GlassIcon, HappinessDivider, RingsIcon, SectionKicker } from './Ornaments'
+import { Reveal } from './Reveal'
 
 export function Events() {
-  const { locale, t } = useLocale();
-  const { akad, resepsi, dressCode } = wedding.events;
+  const { locale, t } = useI18n()
 
   return (
-    <section className="fade-up px-6 py-12">
-      <SectionHeading title={t.events.title} />
-      <div className="space-y-6">
-        <EventCard
-          title={t.events.akad}
-          time={akad.time[locale]}
-          venue={akad.venue}
-          address={akad.address}
-          mapsUrl={akad.mapsUrl}
-          mapLabel={t.events.map}
-          mapNote={t.events.mapPlaceholder}
-        />
-        <EventCard
-          title={t.events.resepsi}
-          time={resepsi.time[locale]}
-          venue={resepsi.venue}
-          address={resepsi.address}
-          mapsUrl={resepsi.mapsUrl}
-          mapLabel={t.events.map}
-          mapNote={t.events.mapPlaceholder}
-        />
+    <section id="acara" className="px-5 py-12">
+      <Reveal>
+        <SectionKicker>{t.events.kicker}</SectionKicker>
+        <h2 className="mt-2 text-center font-display text-4xl text-ink sm:text-5xl">{t.events.title}</h2>
+        <HappinessDivider className="mt-4" />
+        <p className="mx-auto mt-4 max-w-md text-center text-sm text-ink-soft">{t.events.note}</p>
+      </Reveal>
+
+      <div className="mx-auto mt-10 grid max-w-3xl gap-5 md:grid-cols-2">
+        {wedding.events.map((event, index) => {
+          const copy = t.events[event.id]
+          return (
+            <Reveal key={event.id} delayMs={index * 100}>
+              <article className="relative overflow-hidden rounded-[1.75rem] border border-gold/35 bg-paper px-6 py-8 text-center shadow-sm">
+                <div className="pointer-events-none absolute inset-0 lattice-wash opacity-30" />
+                <div className="relative mx-auto flex h-12 w-12 items-center justify-center text-cinnabar">
+                  {event.id === 'akad' ? <RingsIcon /> : <GlassIcon />}
+                </div>
+                <h3 className="relative mt-3 font-display text-3xl text-ink">{copy.title}</h3>
+                <p className="relative mt-1 text-xs tracking-[0.16em] text-gold-deep">{copy.subtitle}</p>
+                <div className="gold-rule relative mx-auto my-5 w-20" />
+                <p className="relative font-display text-lg text-ink">
+                  {formatWeddingDate(wedding.weddingDate, locale)}
+                </p>
+                <p className="relative mt-1 text-sm text-ink-soft">{copy.time}</p>
+                <p className="relative mt-4 font-medium text-ink">{copy.venue}</p>
+                <p className="relative mt-1 text-sm leading-relaxed text-ink-soft">{copy.address}</p>
+                <a
+                  href={event.mapsUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`btn-outline-gold relative mt-6 inline-flex rounded-full px-5 py-2.5 text-[11px] font-medium transition ${
+                    locale === 'zh' ? 'tracking-[0.14em]' : 'uppercase tracking-[0.2em]'
+                  }`}
+                >
+                  {t.events.maps}
+                </a>
+              </article>
+            </Reveal>
+          )
+        })}
       </div>
-      <p className="mt-6 text-center text-sm text-ink-soft">
-        {t.events.dressCode}: {dressCode[locale]}
-      </p>
     </section>
-  );
+  )
 }

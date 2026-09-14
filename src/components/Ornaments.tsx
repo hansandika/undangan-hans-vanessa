@@ -1,83 +1,80 @@
-import type { ReactNode } from "react";
+import { useI18n } from '../i18n/LocaleContext'
 
-type CloudProps = {
-  className?: string;
-};
-
-export function CloudMotif({ className = "h-8 w-24 text-gold/70" }: CloudProps) {
-  return (
-    <svg
-      viewBox="0 0 120 32"
-      fill="none"
-      className={className}
-      aria-hidden="true"
-    >
-      <path
-        d="M8 22c6-10 14-14 22-8 4-10 16-12 22-4 8-8 22-6 26 4 10-6 24 0 26 10H8z"
-        stroke="currentColor"
-        strokeWidth="1.1"
-        fill="currentColor"
-        fillOpacity="0.06"
-      />
-    </svg>
-  );
+type IconProps = {
+  className?: string
 }
 
-export function SealXi({ className = "h-16 w-16" }: { className?: string }) {
+export function DoubleHappiness({ className = '' }: IconProps) {
   return (
-    <svg viewBox="0 0 80 80" className={className} aria-hidden="true">
-      <rect
-        x="6"
-        y="6"
-        width="68"
-        height="68"
-        rx="4"
-        fill="#c41e3a"
-        stroke="#e8d5a3"
-        strokeWidth="2"
-      />
-      <rect x="11" y="11" width="58" height="58" rx="2" fill="none" stroke="#f0e2b6" strokeWidth="0.8" />
-      <text
-        x="40"
-        y="54"
-        textAnchor="middle"
-        fontSize="36"
-        fill="#f6efe2"
-        fontFamily="Noto Serif SC, serif"
-      >
-        囍
-      </text>
-    </svg>
-  );
+    <span className={`font-display leading-none select-none ${className}`} aria-hidden>
+      囍
+    </span>
+  )
 }
 
-export function SectionHeading({
-  kicker = "囍",
-  title,
-}: {
-  kicker?: string;
-  title: string;
-}) {
+export function HappinessDivider({ className = '' }: IconProps) {
   return (
-    <header className="mb-8 flex flex-col items-center text-center">
-      <CloudMotif className="mb-2 h-7 w-20 text-gold/80" />
-      <p className="font-cjk text-sm tracking-[0.55em] text-gold">{kicker}</p>
-      <h2 className="mt-2 font-display text-3xl text-cinnabar-deep sm:text-4xl">
-        {title}
-      </h2>
-      <div className="gold-rule mt-4 w-28" />
-    </header>
-  );
-}
-
-export function GoldCornerFrame({ children }: { children: ReactNode }) {
-  return (
-    <div className="relative px-4 py-5">
-      <span className="pointer-events-none absolute left-0 top-0 h-8 w-8 border-l border-t border-gold/70" />
-      <span className="pointer-events-none absolute right-0 top-0 h-8 w-8 border-r border-t border-gold/70" />
-      <span className="pointer-events-none absolute bottom-0 left-0 h-8 w-8 border-b border-l border-gold/70" />
-      <span className="pointer-events-none absolute bottom-0 right-0 h-8 w-8 border-b border-r border-gold/70" />
-      {children}
+    <div className={`flex items-center justify-center gap-3 ${className}`} aria-hidden>
+      <span className="gold-rule w-14 sm:w-20" />
+      <DoubleHappiness className="text-2xl text-cinnabar" />
+      <span className="gold-rule w-14 sm:w-20" />
     </div>
-  );
+  )
+}
+
+export function CloudMark({ className = 'h-8 w-16' }: IconProps) {
+  return (
+    <svg viewBox="0 0 80 32" className={className} fill="currentColor" aria-hidden>
+      <path
+        d="M8 20c0-5 4-9 10-9 1.2-4.5 5.4-8 10.6-8 4.4 0 8.2 2.5 10 6.2C41 6.5 45 4 50 4c6.6 0 12 5 12.8 11.4 5 .6 8.2 4.8 8.2 9.6 0 5.5-4.5 10-10 10H16C10.5 35 6 30.5 6 25c0-1.8.7-3.5 2-5Z"
+        opacity="0.85"
+      />
+    </svg>
+  )
+}
+
+export function LatticeCorner({ className = '' }: IconProps) {
+  return (
+    <svg viewBox="0 0 72 72" className={className} fill="none" aria-hidden>
+      <path d="M8 8h40M8 8v40" stroke="currentColor" strokeWidth="1.2" />
+      <path d="M8 20h20V8M20 8v28h-12" stroke="currentColor" strokeWidth="0.8" opacity="0.7" />
+      <path d="M14 14h14v14H14Z" stroke="currentColor" strokeWidth="0.7" opacity="0.55" />
+      <circle cx="21" cy="21" r="3.2" stroke="currentColor" strokeWidth="0.8" />
+    </svg>
+  )
+}
+
+export function SectionKicker({ children }: { children: string }) {
+  const { locale } = useI18n()
+  return (
+    <p
+      className={`text-center text-[11px] font-medium text-gold-deep ${
+        locale === 'zh' ? 'tracking-[0.28em]' : 'uppercase tracking-[0.32em]'
+      }`}
+    >
+      {children}
+    </p>
+  )
+}
+
+export function RingsIcon({ className = 'h-8 w-8' }: IconProps) {
+  return (
+    <svg viewBox="0 0 48 48" className={className} fill="none" aria-hidden>
+      <circle cx="20" cy="24" r="10" stroke="currentColor" strokeWidth="1.4" />
+      <circle cx="28" cy="24" r="10" stroke="currentColor" strokeWidth="1.4" />
+    </svg>
+  )
+}
+
+export function GlassIcon({ className = 'h-8 w-8' }: IconProps) {
+  return (
+    <svg viewBox="0 0 48 48" className={className} fill="none" aria-hidden>
+      <path
+        d="M14 10h20l-3.2 16.4A8 8 0 0 1 23 34h-2a8 8 0 0 1-7.8-7.6L14 10Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+      />
+      <path d="M24 34v6M18 40h12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  )
 }

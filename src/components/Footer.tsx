@@ -1,24 +1,19 @@
-import { useLocale } from "../context/LocaleContext";
-import { wedding } from "../data/wedding";
-import { SealXi } from "./Ornaments";
+import { wedding } from '../data/wedding'
+import { useI18n } from '../i18n/LocaleContext'
+import { HappinessDivider } from './Ornaments'
 
 export function Footer() {
-  const { t } = useLocale();
+  const { t } = useI18n()
 
   return (
-    <footer className="fade-up px-8 pb-24 pt-8 text-center">
-      <div className="gold-rule mx-auto mb-6 w-20" />
-      <div className="mx-auto mb-4 flex justify-center">
-        <SealXi className="h-12 w-12" />
+    <footer className="px-5 pb-20 pt-8">
+      <div className="mx-auto max-w-lg text-center">
+        <HappinessDivider />
+        <p className="mt-6 font-display text-lg leading-relaxed text-ink-soft italic">{t.footer.thankYou}</p>
+        <p className="mt-6 text-[11px] tracking-[0.28em] text-cinnabar">{t.footer.closing}</p>
+        <p className="mt-2 font-script text-5xl text-ink">{wedding.couple.displayNames}</p>
+        <p className="mt-6 text-[11px] text-ink-soft/70">{t.footer.musicCredit}</p>
       </div>
-      <p className="text-sm leading-relaxed text-ink-soft">{t.footer.thanks}</p>
-      <p className="mt-3 font-display text-xl italic text-cinnabar-deep">
-        {t.footer.closing}
-      </p>
-      <p className="mt-8 font-display text-sm tracking-[0.2em] text-gold">
-        {t.footer.madeWith}
-      </p>
-      <p className="mt-1 text-[11px] text-ink-soft/70">{wedding.couple.hashtag}</p>
     </footer>
-  );
+  )
 }

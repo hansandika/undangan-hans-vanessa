@@ -1,67 +1,69 @@
-import { useState } from "react";
-import { useLocale } from "../context/LocaleContext";
-import { wedding } from "../data/wedding";
-import { GoldCornerFrame, SectionHeading } from "./Ornaments";
+import { useState } from 'react'
+import { wedding } from '../data/wedding'
+import { useI18n } from '../i18n/LocaleContext'
+import { HappinessDivider, SectionKicker } from './Ornaments'
+import { Reveal } from './Reveal'
 
 export function Gift() {
-  const { t } = useLocale();
-  const [copied, setCopied] = useState<string | null>(null);
+  const { locale, t } = useI18n()
+  const [copied, setCopied] = useState<string | null>(null)
 
-  const copyNumber = async (value: string) => {
+  async function copyNumber(number: string) {
     try {
-      await navigator.clipboard.writeText(value);
-      setCopied(value);
-      window.setTimeout(() => setCopied(null), 3500);
+      await navigator.clipboard.writeText(number)
+      setCopied(number)
+      window.setTimeout(() => setCopied(null), 2200)
     } catch {
-      const field = document.createElement("textarea");
-      field.value = value;
-      document.body.appendChild(field);
-      field.select();
-      document.execCommand("copy");
-      document.body.removeChild(field);
-      setCopied(value);
-      window.setTimeout(() => setCopied(null), 3500);
+      setCopied('error')
+      window.setTimeout(() => setCopied(null), 2200)
     }
-  };
+  }
 
   return (
-    <section className="fade-up px-6 py-12">
-      <SectionHeading title={t.gift.title} />
-      <p className="mb-6 text-center text-sm leading-relaxed text-ink-soft">
-        {t.gift.subtitle}
-      </p>
-      <div className="space-y-4">
-        {wedding.gifts.map((gift) => (
-          <article
-            key={`${gift.bank}-${gift.accountNumber}`}
-            className="rounded-xl border border-gold/30 bg-ivory/80"
-          >
-            <GoldCornerFrame>
-              <p className="text-[11px] uppercase tracking-[0.3em] text-gold">
-                {gift.bank}
+    <section id="hadiah" className="px-5 py-12">
+      <Reveal>
+        <SectionKicker>{t.gift.kicker}</SectionKicker>
+        <h2 className="mt-2 text-center font-display text-4xl text-ink sm:text-5xl">{t.gift.title}</h2>
+        <HappinessDivider className="mt-4" />
+        <p className="mx-auto mt-4 max-w-md text-center text-sm leading-relaxed text-ink-soft">
+          {t.gift.intro}
+        </p>
+      </Reveal>
+
+      <div className="mx-auto mt-8 grid max-w-lg gap-4">
+        {wedding.gift.accounts.map((account, index) => (
+          <Reveal key={`${account.bankKey}-${account.number}`} delayMs={index * 80}>
+            <article className="relative overflow-hidden rounded-[1.6rem] border border-gold/35 bg-paper px-6 py-6 text-center shadow-sm">
+              <div className="seal-stamp pointer-events-none absolute -right-2 -top-1 text-lg font-display">
+                囍
+              </div>
+              <p
+                className={`text-[11px] text-cinnabar ${
+                  locale === 'zh' ? 'tracking-[0.16em]' : 'uppercase tracking-[0.22em]'
+                }`}
+              >
+                {t.gift.banks[account.bankKey]}
               </p>
-              <p className="mt-2 text-sm text-ink-soft">
-                {t.gift.accountName} {gift.accountName}
-              </p>
-              <p className="mt-1 font-display text-xl tracking-wide text-cinnabar-deep">
-                {gift.accountNumber}
+              <p className="mt-3 font-display text-3xl tracking-wide text-ink">{account.number}</p>
+              <p className="mt-1 text-sm text-ink-soft">
+                {t.gift.accountOf} {account.name}
               </p>
               <button
                 type="button"
-                onClick={() => copyNumber(gift.accountNumber)}
-                aria-live="polite"
-                className={`mt-3 min-w-[6.5rem] rounded-full border px-4 py-1.5 text-sm transition ${
-                  copied === gift.accountNumber
-                    ? "border-cinnabar bg-cinnabar text-ivory"
-                    : "border-cinnabar bg-transparent text-cinnabar hover:bg-cinnabar hover:text-ivory"
+                onClick={() => void copyNumber(account.number)}
+                className={`btn-outline-gold mt-5 rounded-full px-5 py-2.5 text-[11px] font-medium transition ${
+                  locale === 'zh' ? 'tracking-[0.14em]' : 'uppercase tracking-[0.2em]'
                 }`}
               >
-                {copied === gift.accountNumber ? t.gift.copied : t.gift.copy}
+                {copied === account.number ? t.gift.copied : t.gift.copy}
               </button>
-            </GoldCornerFrame>
-          </article>
+            </article>
+          </Reveal>
         ))}
       </div>
+      {copied === 'error' ? (
+        <p className="mt-3 text-center text-sm text-ink-soft">{t.gift.copyError}</p>
+      ) : null}
     </section>
-  );
+  )
 }

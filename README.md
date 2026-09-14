@@ -1,67 +1,57 @@
 # Undangan Pernikahan Hans & Vanessa
 
-Mobile-first digital wedding invitation (undangan pernikahan digital) for **Hans Andika** and **Vanessa**, in a Chinese-Indonesian palette: cinnabar red, soft gold, ivory paper, and charcoal ink.
+Undangan pernikahan digital (satu halaman, mobile-first) untuk Hans & Vanessa. Estetika pernikahan Tionghoa–Indonesia: merah cinnabar, emas, kertas gading, dan motif 囍. Bahasa mengikuti locale perangkat, dengan sakelar ID / EN / 中.
 
-Languages: **Indonesian**, **English**, and **Chinese** (`ID / EN / 中`).
-
-## Quick start
+## Menjalankan secara lokal
 
 ```bash
 npm install
 npm run dev
 ```
 
-Then open the local URL Vite prints (usually `http://localhost:5173`).
-
-Personalized cover greeting:
-
-```
-http://localhost:5173/?to=Bapak%20dan%20Ibu%20Wijaya
-```
-
-Production build:
+Buka `http://127.0.0.1:4721`. Untuk pratinjau produksi:
 
 ```bash
 npm run build
 npm run preview
 ```
 
-## Edit content
+Nama tamu di URL (berlaku di semua bahasa):
 
-| What | Where |
-| --- | --- |
-| Names, date, venues, parents, banks, maps, photos | `src/data/wedding.ts` |
-| All guest-facing strings (id / en / zh) | `src/i18n/copy.ts` |
-| Photos | `public/images/hans-vanessa-1.jpg` … `-5.jpg` |
-| Background music | `public/music/bgm.mp3` |
+```
+http://127.0.0.1:4721/?to=Keluarga%20Andi
+```
 
-Values wrapped in `[PLACEHOLDER: …]` are unfinished on purpose. Replace them before sharing the invitation:
+## Mengedit konten
 
-- Ceremony date (example: **Sabtu, 13 Maret 2027**)
-- Akad and resepsi venues + Google Maps URLs
-- Parents’ names
-- Chinese names
-- Bank name / account name / account number
-- Dress code
+Fakta yang sama di semua bahasa (nama, foto, tanggal ISO, rekening, tautan peta):
 
-## Language
+```
+src/data/wedding.ts
+```
 
-- Detects `navigator.language` and maps `id*` / `en*` / `zh*`
-- Manual toggle **ID / EN / 中** writes an override to `localStorage` (`hans-vanessa-locale`)
-- Default without a match is Indonesian
+Semua teks yang tampil ke tamu (ID / EN / ZH), termasuk bio, venue, dan ucapan:
 
-## RSVP guestbook
+```
+src/i18n/copy.ts
+```
 
-Wishes are stored in `localStorage` in this browser.
+Bahasa:
 
-There is a **TODO** in `src/lib/guestbook.ts` to `POST /api/rsvp` once a backend exists.
+- Deteksi `navigator.language`: `id*` → Indonesia, `en*` → English, `zh*` → 简体中文
+- Pilihan tamu disimpan di `localStorage` (`hans-vanessa-locale`)
+- Sakelar ID / EN / 中 ada di sampul dan di halaman undangan
 
-## Music
+Foto: `public/images/hans-vanessa-1.jpg` … `5.jpg`.
 
-Opening the cover starts audio. The floating control toggles play/pause.
+## RSVP
 
-Replace `public/music/bgm.mp3` with a royalty-free instrumental if you prefer. If the file cannot play, the site falls back to a generated pentatonic ambient bed (Web Audio).
+Formulir RSVP menyimpan data di `localStorage` peramban tamu (demo). Ada komentar `TODO` untuk Formspree/API.
+
+## Musik
+
+Setelah undangan dibuka: *Canon in D Major* — Kevin MacLeod ([incompetech.com](https://incompetech.com)), [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). Ganti `public/music/wedding.mp3` atau `music.src` di config.
 
 ## Stack
 
-Vite + React + TypeScript + Tailwind CSS v4.
+Vite + React + TypeScript + Tailwind CSS. Tidak ada backend.

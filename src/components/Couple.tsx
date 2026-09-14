@@ -1,61 +1,43 @@
-import { useLocale } from "../context/LocaleContext";
-import { wedding } from "../data/wedding";
-import { SectionHeading } from "./Ornaments";
+import { wedding } from '../data/wedding'
+import { useI18n } from '../i18n/LocaleContext'
+import { HappinessDivider, SectionKicker } from './Ornaments'
+import { Reveal } from './Reveal'
 
 export function Couple() {
-  const { locale, t } = useLocale();
-  const { groom, bride } = wedding.couple;
+  const { t } = useI18n()
+  const people = [
+    { person: wedding.couple.groom, copy: t.couple.groom },
+    { person: wedding.couple.bride, copy: t.couple.bride },
+  ]
 
   return (
-    <section className="fade-up px-6 py-12">
-      <SectionHeading title={t.couple.title} />
-      <div className="space-y-10">
-        <article className="text-center">
-          <div className="mx-auto max-w-[200px]">
-            <img
-              src={wedding.photos[0].src}
-              alt={wedding.photos[0].alt[locale]}
-              className="photo-arch aspect-[3/4] w-full"
-            />
-          </div>
-          <p className="mt-5 text-[11px] uppercase tracking-[0.35em] text-gold">
-            {t.couple.groom}
-          </p>
-          <h3 className="mt-1 font-display text-3xl text-cinnabar-deep">
-            {groom.fullName}
-          </h3>
-          <p className="font-cjk mt-1 text-sm text-ink-soft">{groom.nameZh}</p>
-          <p className="mt-3 text-sm leading-relaxed text-ink-soft">
-            {t.couple.sonOf}
-            <br />
-            {groom.parents.father} {t.couple.and} {groom.parents.mother}
-          </p>
-        </article>
+    <section id="mempelai" className="px-5 py-12">
+      <Reveal>
+        <SectionKicker>{t.couple.kicker}</SectionKicker>
+        <h2 className="mt-2 text-center font-display text-4xl text-ink sm:text-5xl">{t.couple.title}</h2>
+        <HappinessDivider className="mt-4" />
+      </Reveal>
 
-        <p className="text-center font-cjk text-3xl text-gold">囍</p>
-
-        <article className="text-center">
-          <div className="mx-auto max-w-[200px]">
-            <img
-              src={wedding.photos[4].src}
-              alt={wedding.photos[4].alt[locale]}
-              className="photo-arch aspect-[3/4] w-full object-top"
-            />
-          </div>
-          <p className="mt-5 text-[11px] uppercase tracking-[0.35em] text-gold">
-            {t.couple.bride}
-          </p>
-          <h3 className="mt-1 font-display text-3xl text-cinnabar-deep">
-            {bride.fullName}
-          </h3>
-          <p className="font-cjk mt-1 text-sm text-ink-soft">{bride.nameZh}</p>
-          <p className="mt-3 text-sm leading-relaxed text-ink-soft">
-            {t.couple.daughterOf}
-            <br />
-            {bride.parents.father} {t.couple.and} {bride.parents.mother}
-          </p>
-        </article>
+      <div className="mx-auto mt-10 grid max-w-3xl gap-12 md:grid-cols-2 md:gap-8">
+        {people.map(({ person, copy }, index) => (
+          <Reveal key={person.name} delayMs={index * 120}>
+            <article className="flex flex-col items-center text-center">
+              <div className="arch-frame h-72 w-52 sm:h-80 sm:w-56">
+                <img
+                  src={person.photo}
+                  alt={person.name}
+                  style={{ objectPosition: person.photoPosition }}
+                />
+              </div>
+              <p className="mt-6 text-[11px] tracking-[0.28em] text-cinnabar">{copy.role}</p>
+              <h3 className="mt-1 font-script text-5xl text-ink">{person.shortName}</h3>
+              <p className="mt-1 font-display text-xl text-ink">{person.name}</p>
+              <p className="mt-3 max-w-xs text-sm leading-relaxed text-ink-soft">{copy.parents}</p>
+              <p className="mt-3 max-w-sm text-sm leading-relaxed text-ink-soft">{copy.bio}</p>
+            </article>
+          </Reveal>
+        ))}
       </div>
     </section>
-  );
+  )
 }

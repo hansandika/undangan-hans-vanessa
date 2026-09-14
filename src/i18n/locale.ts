@@ -1,48 +1,46 @@
-import type { Locale } from "../data/wedding";
+import { wedding } from '../data/wedding'
+import { LOCALES, type Locale } from './types'
 
-const STORAGE_KEY = "hans-vanessa-locale";
-
-export const LOCALES: Locale[] = ["id", "en", "zh"];
-
-export function isLocale(value: string | null): value is Locale {
-  return value === "id" || value === "en" || value === "zh";
-}
-
-/** Map navigator.language prefixes: id* / en* / zh*. */
-export function localeFromNavigator(language: string): Locale {
-  const tag = language.toLowerCase();
-  if (tag.startsWith("zh")) return "zh";
-  if (tag.startsWith("en")) return "en";
-  if (tag.startsWith("id")) return "id";
-  return "id";
-}
-
-export function readStoredLocale(): Locale | null {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return isLocale(stored) ? stored : null;
-  } catch {
-    return null;
-  }
-}
-
-export function storeLocale(locale: Locale): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, locale);
-  } catch {
-    /* private mode */
-  }
+export function isLocale(value: string | null | undefined): value is Locale {
+  return value === 'id' || value === 'en' || value === 'zh'
 }
 
 export function detectLocale(): Locale {
-  const stored = readStoredLocale();
-  if (stored) return stored;
-  if (typeof navigator === "undefined") return "id";
-  return localeFromNavigator(navigator.language || "id");
+  try {
+    const stored = localStorage.getItem(wedding.rsvp.localeKey)
+    if (isLocale(stored)) return stored
+  } catch {
+    /* ignore */
+  }
+
+  const language = (navigator.language || navigator.languages?.[0] || 'id').toLowerCase()
+  if (language.startsWith('id')) return 'id'
+  if (language.startsWith('zh')) return 'zh'
+  if (language.startsWith('en')) return 'en'
+  return 'id'
 }
 
-export function guestNameFromSearch(search = window.location.search): string {
-  const raw = new URLSearchParams(search).get("to");
-  if (!raw) return "";
-  return decodeURIComponent(raw.replace(/\+/g, " ")).trim();
+export function persistLocale(locale: Locale) {
+  try {
+    localStorage.setItem(wedding.rsvp.localeKey, locale)
+  } catch {
+    /* ignore */
+  }
 }
+
+export function dateLocale(locale: Locale): string {
+  if (locale === 'id') return 'id-ID'
+  if (locale === 'zh') return 'zh-CN'
+  return 'en-GB'
+}
+
+export function formatWeddingDate(iso: string, locale: Locale): string {
+  return new Intl.DateTimeFormat(dateLocale(locale), {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(iso))
+}
+
+export { LOCALES }
