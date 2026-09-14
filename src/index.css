@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Cormorant Garamond", "Noto Serif SC", serif;
+  --font-cjk: "Noto Serif SC", "Noto Serif", serif;
+  --font-body: "Noto Serif", "Noto Serif SC", Georgia, serif;
+  --color-cinnabar: #b4232a;
+  --color-cinnabar-deep: #6e1218;
+  --color-cinnabar-ink: #3f0c10;
+  --color-gold: #c9a24a;
+  --color-gold-soft: #e8d5a3;
+  --color-gold-bright: #f0e2b6;
+  --color-ivory: #f6efe2;
+  --color-ivory-deep: #ebe0cc;
+  --color-ink: #2a1b16;
+  --color-ink-soft: #5c463c;
+  --color-seal: #c41e3a;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #3f0c10;
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+html[lang="zh"] body,
+html[lang="zh"] {
+  font-family: var(--font-cjk);
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+}
+
+.font-cjk {
+  font-family: var(--font-cjk);
+}
+
+.paper-bg {
+  background-color: var(--color-ivory);
+  background-image:
+    radial-gradient(ellipse at 18% 0%, rgba(201, 162, 74, 0.14), transparent 46%),
+    radial-gradient(ellipse at 90% 18%, rgba(180, 35, 42, 0.07), transparent 42%),
+    radial-gradient(ellipse at 50% 100%, rgba(201, 162, 74, 0.1), transparent 50%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cpath d='M36 2 L70 36 L36 70 L2 36 Z' fill='none' stroke='%23c9a24a' stroke-opacity='0.07' stroke-width='0.8'/%3E%3C/svg%3E");
+}
+
+.lattice-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cpath d='M28 4 L52 28 L28 52 L4 28 Z' fill='none' stroke='%23c9a24a' stroke-opacity='0.16' stroke-width='0.7'/%3E%3Ccircle cx='28' cy='28' r='2.2' fill='%23c9a24a' fill-opacity='0.08'/%3E%3C/svg%3E");
+}
+
+.gold-rule {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-gold-soft),
+    var(--color-gold),
+    var(--color-gold-soft),
+    transparent
+  );
+}
+
+.photo-arch {
+  border-radius: 999px 999px 18px 18px;
+  object-fit: cover;
+  border: 3px solid var(--color-gold-soft);
+  box-shadow:
+    0 0 0 1px #c9a24a,
+    0 18px 40px rgba(62, 12, 16, 0.22);
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up {
+  animation: fade-up 0.9s ease both;
+}
+
+@keyframes seal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.86) rotate(-8deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(-6deg);
+  }
+}
+
+.seal-in {
+  animation: seal-in 0.8s 0.2s ease both;
+}
+
+@keyframes pulse-gold {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(201, 162, 74, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(201, 162, 74, 0);
+  }
+}
+
+.pulse-gold {
+  animation: pulse-gold 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-up,
+  .seal-in,
+  .pulse-gold {
+    animation: none;
+  }
+}
