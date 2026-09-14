@@ -11,9 +11,8 @@
   --color-ink: #2a221c;
   --color-ink-soft: #5b4d43;
   --color-paper: #fff8ec;
-  --font-script: 'Great Vibes', cursive;
-  --font-display: 'Cormorant Garamond', 'Noto Serif SC', serif;
-  --font-sans: 'Outfit', 'Noto Sans SC', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Cardo', 'Noto Serif SC', serif;
+  --font-sans: 'Nunito', 'Noto Sans SC', ui-sans-serif, system-ui, sans-serif;
   --font-cjk: 'Noto Serif SC', 'Noto Sans SC', serif;
 }
 
@@ -38,10 +37,6 @@ body {
 html[data-locale='zh'] body,
 html[data-locale='zh'] .font-display {
   font-family: var(--font-cjk);
-}
-
-html[data-locale='zh'] .font-script {
-  font-family: var(--font-script);
 }
 
 body::before {

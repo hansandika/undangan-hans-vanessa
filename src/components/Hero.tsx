@@ -17,7 +17,7 @@ export function Hero() {
     <section className="px-5 pb-6 pt-16 sm:pt-20">
       <Reveal>
         <SectionKicker>{t.hero.kicker}</SectionKicker>
-        <h2 className="mt-2 text-center font-script text-6xl text-ink sm:text-7xl">
+        <h2 className="mt-2 text-center font-display text-5xl text-ink sm:text-6xl">
           {wedding.couple.displayNames}
         </h2>
         <HappinessDivider className="mt-4" />

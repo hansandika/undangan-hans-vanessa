@@ -11,7 +11,7 @@ export function Footer() {
         <HappinessDivider />
         <p className="mt-6 font-display text-lg leading-relaxed text-ink-soft italic">{t.footer.thankYou}</p>
         <p className="mt-6 text-[11px] tracking-[0.28em] text-cinnabar">{t.footer.closing}</p>
-        <p className="mt-2 font-script text-5xl text-ink">{wedding.couple.displayNames}</p>
+        <p className="mt-2 font-display text-4xl text-ink">{wedding.couple.displayNames}</p>
         <p className="mt-6 text-[11px] text-ink-soft/70">{t.footer.musicCredit}</p>
       </div>
     </footer>
