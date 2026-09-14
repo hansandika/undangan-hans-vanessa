@@ -30,8 +30,7 @@ export function Couple() {
                 />
               </div>
               <p className="mt-6 text-[11px] tracking-[0.28em] text-cinnabar">{copy.role}</p>
-              <h3 className="mt-1 font-script text-5xl text-ink">{person.shortName}</h3>
-              <p className="mt-1 font-display text-xl text-ink">{person.name}</p>
+              <h3 className="mt-2 font-display text-4xl leading-tight text-ink sm:text-5xl">{person.name}</h3>
               <p className="mt-3 max-w-xs text-sm leading-relaxed text-ink-soft">{copy.parents}</p>
               <p className="mt-3 max-w-sm text-sm leading-relaxed text-ink-soft">{copy.bio}</p>
             </article>

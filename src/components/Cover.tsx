@@ -42,7 +42,7 @@ export function Cover({ onOpen }: CoverProps) {
         </p>
         <DoubleHappiness className="mt-3 text-5xl text-gold drop-shadow-sm" />
         <HappinessDivider className="mt-2" />
-        <h1 className="mt-2 font-script text-[4.2rem] leading-none text-[#f6ead4] drop-shadow-sm sm:text-8xl">
+        <h1 className="mt-2 font-display text-5xl leading-tight text-[#f6ead4] drop-shadow-sm sm:text-7xl">
           {wedding.couple.displayNames}
         </h1>
         <p className="mt-3 font-display text-lg italic text-cream/90 sm:text-xl">
